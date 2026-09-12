@@ -34,17 +34,17 @@ app.get("/", (req, res) => {
 // GET all students
 app.get("/students", async (req, res) => {
     try {
-        const result = await sql.query("SELECT * FROM Students ORDER BY id DESC");
+        const result = await sql.query("SELECT * FROM Persons ORDER BY id DESC");
         res.json(result.recordset);
     } catch (err) {
         console.error(err);
         res.status(500).json({
-            error: "Failed to fetch students"
+            error: "Failed to fetch persons"
         });
     }
 });
-// CREATE a new student
-app.post("/students", async (req, res) => {
+// CREATE a new person
+app.post("/persons", async (req, res) => {
     try {
         const { name, email, phone, course } = req.body;
 
@@ -62,7 +62,7 @@ app.post("/students", async (req, res) => {
         request.input("course", sql.VarChar(100), course || null);
 
         const result = await request.query(`
-            INSERT INTO Students (name, email, phone, course)
+            INSERT INTO Persons (name, email, phone, course)
             OUTPUT INSERTED.*
             VALUES (@name, @email, @phone, @course)
         `);
@@ -72,12 +72,12 @@ app.post("/students", async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).json({
-            error: "Failed to add student"
+            error: "Failed to add person"
         });
     }
 });
-// UPDATE a student
-app.put("/students/:id", async (req, res) => {
+// UPDATE a person
+app.put("/persons/:id", async (req, res) => {
     try {
         const { id } = req.params;
         const { name, email, phone, course } = req.body;
@@ -97,7 +97,7 @@ app.put("/students/:id", async (req, res) => {
         request.input("course", sql.VarChar(100), course || null);
 
         const result = await request.query(`
-            UPDATE Students
+            UPDATE Persons
             SET
                 name = @name,
                 email = @email,
@@ -109,7 +109,7 @@ app.put("/students/:id", async (req, res) => {
 
         if (result.recordset.length === 0) {
             return res.status(404).json({
-                error: "Student not found"
+                error: "Person not found"
             });
         }
 
@@ -118,12 +118,12 @@ app.put("/students/:id", async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).json({
-            error: "Failed to update student"
+            error: "Failed to update person"
         });
     }
 });
-// DELETE a student
-app.delete("/students/:id", async (req, res) => {
+// DELETE a person
+app.delete("/persons/:id", async (req, res) => {
     try {
         const { id } = req.params;
 
@@ -131,26 +131,26 @@ app.delete("/students/:id", async (req, res) => {
         request.input("id", sql.Int, id);
 
         const result = await request.query(`
-            DELETE FROM Students
+            DELETE FROM Persons
             OUTPUT DELETED.*
             WHERE id = @id
         `);
 
         if (result.recordset.length === 0) {
             return res.status(404).json({
-                error: "Student not found"
+                error: "Person not found"
             });
         }
 
         res.json({
-            message: "Student deleted successfully",
-            student: result.recordset[0]
+            message: "Person deleted successfully",
+            person: result.recordset[0]
         });
 
     } catch (err) {
         console.error(err);
         res.status(500).json({
-            error: "Failed to delete student"
+            error: "Failed to delete person"
         });
     }
 });
